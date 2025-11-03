@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include "nvmlPower.hpp"
 
 /*
@@ -113,10 +114,19 @@ void nvmlAPIRun()
 		}
 	}
 
-	// This statement assumes that the first indexed GPU will be used.
-	// If there are multiple GPUs that can be used by the system, this needs to be done with care.
-	// Test thoroughly and ensure the correct device ID is being used.
-	nvmlResult = nvmlDeviceGetHandleByIndex(0, &nvmlDeviceID);
+    const char* visible_devices = std::getenv("CUDA_VISIBLE_DEVICES");
+    if(!visible_devices){
+        printf("CUDA_VISIBLE_DEVICES is not set.\n");
+        exit(0);
+    }
+    if(!(std::strlen(visible_devices) == 1 && std::isdigit(visible_devices[0]))){
+        printf("CUDA_VISIBLE_DEVICES should be single num.\n");
+        exit(0);
+    }
+    int device_id = visible_devices[0] - '0';
+    printf("Taking NVML Power measurement for device_id: %d\n", device_id);
+	// Use GPU specified by `export CUDA_VISIBLE_DEVICES`
+	nvmlResult = nvmlDeviceGetHandleByIndex(device_id, &nvmlDeviceID);
 
 	pollThreadStatus = true;
 
