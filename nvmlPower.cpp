@@ -1,4 +1,7 @@
 #include <cstdlib>
+#include <cstring>
+#include <cctype>
+#include <iostream>
 #include "nvmlPower.hpp"
 
 /*
